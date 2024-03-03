@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Skill_Levels {
+  beginner
+  intermediate
+  profesional
+}
+
+model Profile {
+  id          String   @id @default(uuid())
+  first_name  String   @db.VarChar(35)
+  last_name   String   @db.VarChar(35)
+  email       String   @unique @db.VarChar(255)
+  password    String
+  picture_url String   @db.VarChar(255)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Skill {
+  id    String       @id @default(uuid())
+  name  String       @db.VarChar(75)
+  level Skill_Levels @default(beginner)
+}
+
+model Paint {
+  id          String     @id @default(uuid())
+  title       String     @db.VarChar(100)
+  description String?    @db.VarChar(500)
+  Images      Image[]
+  materials   Material[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Material {
+  id       String @id @default(uuid())
+  name     String @db.VarChar(75)
+  paint_id String
+  paint    Paint  @relation(fields: [paint_id], references: [id], onDelete: Cascade)
+}
+
+model Image {
+  id        String @id @default(uuid())
+  image_url String @db.VarChar(255)
+  paint_id  String
+  paint     Paint  @relation(fields: [paint_id], references: [id], onDelete: Cascade)
+}
